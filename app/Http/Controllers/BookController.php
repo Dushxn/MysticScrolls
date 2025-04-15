@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
+use App\Models\Note;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -111,4 +112,28 @@ class BookController extends Controller
             return redirect()->back()->with('error', 'Failed to delete book.');
         }
     }
+
+    public function show($id)
+{
+    $book = Book::findOrFail($id);
+    $notes = Note::where('book_id', $id)->where('user_id', Auth::id())->latest()->get();
+
+    return view('library.show', compact('book', 'notes'));
+}
+
+public function addNote(Request $request, $id)
+{
+    $request->validate([
+        'content' => 'required|string|max:2000'
+    ]);
+
+    Note::create([
+        'book_id' => $id,
+        'user_id' => Auth::id(),
+        'content' => $request->input('content')
+    ]);
+
+    return redirect()->route('library.show', $id)->with('success', 'Note added.');
+}
+
 }

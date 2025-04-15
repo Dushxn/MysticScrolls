@@ -29,8 +29,8 @@
                 </a>
             </li>
             <li style="margin-bottom: 5px;">
-                <a href="#" style="display: block; padding: 12px 20px; color: #999999; text-decoration: none; border-left: 3px solid transparent; transition: all 0.2s;">
-                    <span style="margin-right: 10px; opacity: 0.7;">📖</span> Currently Reading
+                <a href="{{ route('userbooks.index') }}" style="display: block; padding: 12px 20px; color: #999999; text-decoration: none; border-left: 3px solid transparent; transition: all 0.2s;">
+                    <span style="margin-right: 10px; opacity: 0.7;">📖</span> My Books
                 </a>
             </li>
             <li style="margin-bottom: 5px;">

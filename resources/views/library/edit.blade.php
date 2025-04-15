@@ -136,7 +136,18 @@
         <input name="publisher" value="{{ old('publisher', $book->publisher) }}">
 
         <label>Category:</label>
-        <input name="category" value="{{ old('category', $book->category) }}">
+<select name="category" required>
+    <option value="">-- Select Category --</option>
+    <option value="Fiction" {{ old('category') == 'Fiction' ? 'selected' : '' }}>Fiction</option>
+    <option value="Non-Fiction" {{ old('category') == 'Non-Fiction' ? 'selected' : '' }}>Non-Fiction</option>
+    <option value="Fantasy" {{ old('category') == 'Fantasy' ? 'selected' : '' }}>Fantasy</option>
+    <option value="Science Fiction" {{ old('category') == 'Science Fiction' ? 'selected' : '' }}>Science Fiction</option>
+    <option value="Mystery" {{ old('category') == 'Mystery' ? 'selected' : '' }}>Mystery</option>
+    <option value="Biography" {{ old('category') == 'Biography' ? 'selected' : '' }}>Biography</option>
+    <option value="Romance" {{ old('category') == 'Romance' ? 'selected' : '' }}>Romance</option>
+    <option value="Self-Help" {{ old('category') == 'Self-Help' ? 'selected' : '' }}>Self-Help</option>
+    <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other</option>
+</select>
 
         <label>Status:</label>
         <select name="status" required>

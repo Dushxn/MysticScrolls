@@ -238,7 +238,7 @@
                     @if($book->image)
                         <img src="{{ asset('storage/' . $book->image) }}" alt="Book Cover">
                     @endif
-                    <h3>{{ $book->title }}</h3>
+                    <h3><a href="{{ route('library.show', $book->_id) }}" style="color: #00ff55; text-decoration: none;">{{ $book->title }}</a></h3>
                     <p><strong>Author:</strong> {{ $book->author }}</p>
                     <p><strong>Status:</strong> {{ ucfirst(str_replace('_', ' ', $book->status)) }}</p>
                     @if($book->description)

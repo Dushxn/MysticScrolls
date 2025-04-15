@@ -211,11 +211,32 @@
             <a href="{{ route('library.create') }}" class="add-btn">+ Add New Book</a>
         </div>
 
+        <!-- Search Form -->
+<form method="GET" action="{{ route('library.index') }}" style="display: flex; gap: 10px; margin-bottom: 30px;">
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Search books..."
+        style="flex: 1; padding: 10px 15px; background-color: #111; border: 1px solid #333; color: #fff; border-radius: 4px;"
+    >
+    <select
+        name="filter"
+        style="padding: 10px 15px; background-color: #111; border: 1px solid #333; color: #00ff55; border-radius: 4px;"
+    >
+        <option value="title" {{ request('filter') == 'title' ? 'selected' : '' }}>By Title</option>
+        <option value="author" {{ request('filter') == 'author' ? 'selected' : '' }}>By Author</option>
+        <option value="isbn" {{ request('filter') == 'isbn' ? 'selected' : '' }}>By ISBN</option>
+    </select>
+    <button type="submit" class="add-btn" style="padding: 10px 20px;">Search</button>
+</form>
+
+
         <div class="library-grid">
             @foreach ($books as $book)
                 <div class="card">
                     @if($book->image)
-                        <img src="{{ $book->image }}" alt="Book Cover">
+                        <img src="{{ asset('storage/' . $book->image) }}" alt="Book Cover">
                     @endif
                     <h3>{{ $book->title }}</h3>
                     <p><strong>Author:</strong> {{ $book->author }}</p>

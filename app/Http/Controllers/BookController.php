@@ -9,16 +9,24 @@ use Illuminate\Support\Facades\Log;
 
 class BookController extends Controller
 {
-    public function index()
-    {
-        try {
-            $books = Book::where('user_id', Auth::id())->get();
-            return view('library.index', compact('books'));
-        } catch (\Exception $e) {
-            Log::error("Failed to load books: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to load your library.');
+    public function index(Request $request)
+{
+    $query = Book::where('user_id', Auth::id());
+
+    if ($request->filled('search')) {
+        $filter = $request->input('filter', 'title');
+        $search = $request->input('search');
+
+        if (in_array($filter, ['title', 'author', 'isbn'])) {
+            $query->where($filter, 'LIKE', '%' . $search . '%');
         }
     }
+
+    $books = $query->get();
+
+    return view('library.index', compact('books'));
+}
+
 
     public function create()
     {
@@ -26,26 +34,36 @@ class BookController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'image' => 'nullable|url',
-            'description' => 'nullable',
-            'author' => 'required',
-            'isbn' => 'nullable',
-            'publisher' => 'nullable',
-            'category' => 'nullable',
-            'status' => 'required|in:read,currently_reading,not_read'
-        ]);
+{
+    $request->validate([
+        'title' => 'required',
+        'description' => 'nullable',
+        'author' => 'required',
+        'isbn' => 'nullable',
+        'publisher' => 'nullable',
+        'category' => 'nullable',
+        'status' => 'required|in:read,currently_reading,not_read',
+        'image' => 'nullable|image|max:2048'
+    ]);
 
-        try {
-            Book::create($request->all() + ['user_id' => Auth::id()]);
-            return redirect()->route('library.index')->with('success', 'Book added successfully!');
-        } catch (\Exception $e) {
-            Log::error("Error creating book: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to add book. Please try again.');
+    try {
+        $data = $request->except('image');
+        $data['user_id'] = Auth::id();
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('books', 'public');
+            $data['image'] = $imagePath;
         }
+
+        Book::create($data);
+
+        return redirect()->route('library.index')->with('success', 'Book added successfully!');
+    } catch (\Exception $e) {
+        Log::error("Error creating book: " . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to add book.');
     }
+}
+
 
     public function edit(Book $book)
     {
@@ -53,15 +71,35 @@ class BookController extends Controller
     }
 
     public function update(Request $request, Book $book)
-    {
-        try {
-            $book->update($request->all());
-            return redirect()->route('library.index')->with('success', 'Book updated successfully!');
-        } catch (\Exception $e) {
-            Log::error("Error updating book: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to update book.');
+{
+    $request->validate([
+        'title' => 'required',
+        'description' => 'nullable',
+        'author' => 'required',
+        'isbn' => 'nullable',
+        'publisher' => 'nullable',
+        'category' => 'nullable',
+        'status' => 'required|in:read,currently_reading,not_read',
+        'image' => 'nullable|image|max:2048'
+    ]);
+
+    try {
+        $data = $request->except('image');
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('books', 'public');
+            $data['image'] = $imagePath;
         }
+
+        $book->update($data);
+
+        return redirect()->route('library.index')->with('success', 'Book updated!');
+    } catch (\Exception $e) {
+        Log::error("Error updating book: " . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to update book.');
     }
+}
+
 
     public function destroy(Book $book)
     {

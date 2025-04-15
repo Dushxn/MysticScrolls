@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>My Books</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,10 +97,10 @@
 
         .card {
             background-color: #111;
-            border: 1px solid rgba(0,255,85,0.2);
+            border: 1px solid rgba(0, 255, 85, 0.2);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,255,85,0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 85, 0.1);
         }
 
         .card img {
@@ -128,6 +129,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -155,20 +157,30 @@
         </div>
 
         @if(session('success'))
-            <div style="color: #00ff55; margin-bottom: 20px;">{{ session('success') }}</div>
+        <div style="color: #00ff55; margin-bottom: 20px;">{{ session('success') }}</div>
         @endif
 
         <div class="book-grid">
             @foreach($books as $book)
-                <div class="card">
-                    <img src="{{ $book->cover ? asset('storage/' . $book->cover) : 'https://via.placeholder.com/400x200?text=No+Cover' }}" alt="Cover">
-                    <h3>{{ $book->title }}</h3>
-                    <p>{{ \Illuminate\Support\Str::limit($book->summary, 100) }}</p>
-                    <a href="{{ route('userbooks.show', $book->_id) }}">📖 Read</a>
-                </div>
+            <div class="card">
+                <img src="{{ $book->cover ? asset('storage/' . $book->cover) : 'https://via.placeholder.com/400x200?text=No+Cover' }}" alt="Cover">
+                <h3>{{ $book->title }}</h3>
+                <p>{{ \Illuminate\Support\Str::limit($book->summary, 100) }}</p>
+
+                <a href="{{ route('userbooks.show', $book->_id) }}">📖 Read</a>
+                <a href="{{ route('userbooks.edit', $book->_id) }}" style="margin-left: 10px;">✏️ Edit</a>
+
+                <form action="{{ route('userbooks.destroy', $book->_id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" onclick="return confirm('Are you sure?')" style="background:none; border:none; color:#ff4444; cursor:pointer; margin-left:10px;">🗑️ Delete</button>
+                </form>
+            </div>
+
             @endforeach
         </div>
     </div>
 
 </body>
+
 </html>

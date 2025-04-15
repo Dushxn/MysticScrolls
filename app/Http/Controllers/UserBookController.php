@@ -53,4 +53,37 @@ class UserBookController extends Controller
         $pdf = Pdf::loadView('userbooks.pdf', compact('book'));
         return $pdf->download($book->title . '.pdf');
     }
+
+    public function edit($id)
+{
+    $book = UserBook::findOrFail($id);
+    return view('userbooks.edit', compact('book'));
+}
+
+public function update(Request $request, $id)
+{
+    $book = UserBook::findOrFail($id);
+
+    $data = $request->validate([
+        'title' => 'required|string|max:255',
+        'summary' => 'required|string',
+        'content' => 'required|string',
+        'cover' => 'nullable|image|max:2048'
+    ]);
+
+    if ($request->hasFile('cover')) {
+        $data['cover'] = $request->file('cover')->store('books', 'public');
+    }
+
+    $book->update($data);
+
+    return redirect()->route('userbooks.index')->with('success', 'Book updated successfully!');
+}
+
+public function destroy($id)
+{
+    $book = UserBook::findOrFail($id);
+    $book->delete();
+    return redirect()->route('userbooks.index')->with('success', 'Book deleted successfully!');
+}
 }
